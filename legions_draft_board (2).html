@@ -1,0 +1,139 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Legions League Draft</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Noto+Serif:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#161616;--card:#232323;--ink:#f2f2f2;--mut:#a8a8a8;--red:#e23a46;--gold:#d9ae4a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Serif",Georgia,serif;font-weight:700;padding:14px}
+h1,.big{font-family:"Lilita One",Impact,sans-serif;font-weight:400}
+h1{color:var(--red);text-align:center;font-size:clamp(28px,5vw,46px);margin:4px 0 10px}
+button,input,textarea{font:inherit;font-size:14px}
+button{background:var(--card);color:var(--ink);border:2px solid var(--gold);border-radius:8px;padding:7px 12px;cursor:pointer}
+button.p{background:var(--red);border-color:var(--red);color:#fff}button:disabled{opacity:.4;cursor:default}
+input,textarea{background:var(--bg);color:var(--ink);border:2px solid var(--gold);border-radius:8px;padding:8px 10px;width:100%}
+.setup{max-width:620px;margin:0 auto}.srow{display:flex;gap:8px;align-items:center;background:var(--card);border:2px solid var(--gold);border-radius:8px;padding:6px 10px;margin-bottom:6px}
+.srow b{color:var(--red);width:24px;flex:none}.srow input{flex:1;min-width:0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:14px;background:var(--card);border:3px solid var(--gold);border-radius:12px;padding:12px 18px;margin-bottom:10px;flex-wrap:wrap}
+.lbl{color:var(--mut);font-size:12px;letter-spacing:.08em}.team{font-size:clamp(30px,5vw,56px);color:var(--red);line-height:1.05}
+.timer{font-size:clamp(44px,7vw,84px);line-height:1}.timer.low{color:var(--red);animation:pl 1s infinite}@keyframes pl{50%{opacity:.4}}
+.ctl{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:12px;align-items:start}
+.bw{overflow-x:auto}.board{display:grid;grid-template-columns:34px repeat(10,minmax(104px,1fr));gap:4px;min-width:1000px}
+.hd{font-size:15px;text-align:center;color:var(--gold);padding:6px 2px;word-break:break-word}.hd small{display:block;color:var(--mut);font-weight:600;font-size:11px}.rn{display:flex;align-items:center;justify-content:center;color:var(--red)}
+.cell{border:2px solid #3a3a3a;border-radius:6px;min-height:58px;padding:4px 6px;font-size:13px;display:flex;flex-direction:column;justify-content:center;word-break:break-word}
+.cell small{color:var(--mut);font-size:11px;font-weight:600}.cell.f{background:var(--card);border-color:var(--gold)}.cell.c{border-color:var(--red);box-shadow:0 0 0 2px var(--red)}
+.pool{background:var(--card);border:3px solid var(--gold);border-radius:12px;padding:10px;position:sticky;top:8px}
+.pool .bar{display:flex;gap:6px;margin-bottom:8px}
+#pl{max-height:72vh;overflow-y:auto}.pr{border-top:1px solid #3a3a3a;padding:7px 2px}.prt{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.pq{color:var(--red);margin-left:6px}
+.ov{position:fixed;inset:0;background:#000b;display:flex;align-items:center;justify-content:center;z-index:99;padding:14px}
+.bx{background:var(--card);border:3px solid var(--gold);border-radius:12px;padding:16px;width:min(440px,100%)}.bx h3{margin:0 0 10px;color:var(--red)}.bx label{display:block;font-size:12px;color:var(--mut);margin:8px 0 3px}.bx .ctl{margin:14px 0 0;justify-content:flex-end}.bx p{color:var(--mut);font-size:13px;margin:0}
+.stream .ctl,.stream .pool{display:none}.stream .main{grid-template-columns:1fr}.stream .hd{font-size:clamp(14px,1.6vw,24px)}.stream .cell{min-height:calc((100vh - 280px)/12);font-size:clamp(12px,1.4vw,20px)}.stream .bw{overflow:visible}.stream .board{min-width:0}
+</style></head><body><div id="app"></div>
+<script>
+const BASE=[{"n": "VIichan6", "q": "0.6"}, {"n": "0verthrower", "q": ".7"}, {"n": "Alex406", "q": "1.3"}, {"n": "AwesomeJett44", "q": "1.2"}, {"n": "Bazzable", "q": "0.9"}, {"n": "Braooh", "q": ".7"}, {"n": "British_agent", "q": "0.6"}, {"n": "Clane_", "q": "1.5"}, {"n": "CleanGrass", "q": "1.5"}, {"n": "Clutchinton", "q": "1.5"}, {"n": "CrystalFang", "q": "1.6"}, {"n": "DGSgmes", "q": "0.9"}, {"n": "Dbrooky", "q": "1.3"}, {"n": "DistruktorVince", "q": "0.7"}, {"n": "Draqonate", "q": "1.8"}, {"n": "Eigt", "q": "1.4"}, {"n": "Freekee_Fang", "q": "1.6 I think"}, {"n": "HammyTheFirst", "q": "0.6"}, {"n": "Htooncrimes", "q": "1.5"}, {"n": "Ifny", "q": "1.4"}, {"n": "judicatorjuan", "q": "1.4"}, {"n": "Kelorath", "q": ".8"}, {"n": "LiquidWren", "q": "0.8"}, {"n": "McWetPaper", "q": "1.9"}, {"n": "ModelPancake", "q": "0.7"}, {"n": "Nightmare2g", "q": "1.3"}, {"n": "NonaLion", "q": "1.3"}, {"n": "Ontspot", "q": ".6"}, {"n": "Paradoxi0n", "q": "0.9"}, {"n": "PhoenixTBB", "q": "0.7"}, {"n": "Pillarger", "q": "1.9"}, {"n": "PinchPlayz", "q": "1.3"}, {"n": "playertracker", "q": "1.3"}, {"n": "Pude", "q": "1.4"}, {"n": "PufferBucket", "q": "1.5"}, {"n": "Qalius", "q": "1.4"}, {"n": "CCTG", "q": "1.0"}, {"n": "ResidentMaster", "q": "1.6"}, {"n": "RoyalDvck", "q": "1.3"}, {"n": "Rxyale", "q": "0.9"}, {"n": "SarahRosemarie", "q": ".6"}, {"n": "ScarlettQrow", "q": "0.9"}, {"n": "SleepyToons", "q": "1.4"}, {"n": "Slockmen", "q": "1.1"}, {"n": "Soli1d1", "q": "0.7"}, {"n": "SonnyD__", "q": "1.2"}, {"n": "Sylveaun", "q": "1.8"}, {"n": "Tackell", "q": "0.7"}, {"n": "GiantGreenHulk", "q": "1.5"}, {"n": "TripleLion", "q": "2.0"}, {"n": "VertVFX", "q": "1.4"}, {"n": "VeryLargePig", "q": "1.3"}, {"n": "WOOHOOpotato", "q": "1.7"}, {"n": "WhatVenom", "q": "1.2"}, {"n": "WoWqd", "q": "0.9"}, {"n": "Worlow87", "q": "1.1"}, {"n": "XiaoMingLee", "q": "1.1"}, {"n": "Zendrious", "q": "1.0"}, {"n": "zombie_man786", "q": "1.2"}, {"n": "Zypher0n", "q": "0.5"}, {"n": "aidenco", "q": "1.1"}, {"n": "alphadarkman", "q": "0.6"}, {"n": "archiex1", "q": "0.7"}, {"n": "betjuhh", "q": "1.6"}, {"n": "blssful", "q": "0.9"}, {"n": "derpyszn", "q": "1.5"}, {"n": "E_X_K", "q": "1.5"}, {"n": "fatgoogy", "q": "1.1"}, {"n": "Frohsted", "q": "1.1"}, {"n": "gecorules", "q": "0.5 :("}, {"n": "Henrikque", "q": "1.1"}, {"n": "Mough", "q": "1.3"}, {"n": "Pandapancakes01", "q": "0.6"}, {"n": "Pavak", "q": "1.2"}, {"n": "pzcv", "q": "1.3"}, {"n": "shuri11", "q": "1.3"}, {"n": "stardust217", "q": "0.7"}, {"n": "sterb_FPS", "q": ".9"}, {"n": "Swaggist", "q": "1.6"}, {"n": "tedzi343", "q": "1.5"}, {"n": "UghBraces", "q": "1.1"}, {"n": "vilger", "q": "1.2"}, {"n": "willeumy", "q": "1.3"}, {"n": "xqinox_", "q": "0.8"}, {"n": "Xyphwr", "q": ".6"}, {"n": "c4pylisa", "q": ".8"}, {"n": "EMPolse", "q": "1.9"}, {"n": "Fuzion_0", "q": "0.9"}, {"n": "Greenboii", "q": "1.8"}, {"n": "Kayzzo", "q": "1.3"}, {"n": "whoiskrissie", "q": "0.5"}, {"n": "Perciel", "q": "0.7"}, {"n": "N_ez", "q": "1.2"}, {"n": "Numbers13232", "q": "1.1"}, {"n": "9ady", "q": "1.0"}, {"n": "RedIzLightning", "q": "1.5 I think, they keep moving it though"}, {"n": "Samuelle1411", "q": ".8"}, {"n": "CptSquidy", "q": "1.2"}, {"n": "TRIDDER11111", "q": ".7"}, {"n": "eepyblossom", "q": "0.9"}, {"n": "DUOOM", "q": "1.7"}, {"n": "dotminecraft", "q": "0.9"}, {"n": "uronlyjestar", "q": ".7"}, {"n": "mvtro", "q": "1.4"}, {"n": "_Syanide", "q": "1.0"}, {"n": "ResThree", "q": "1.5"}, {"n": "SMILE_PLAYER", "q": "1.2"}, {"n": "BurntPxnguin", "q": "1.4"}, {"n": "NolanZz_", "q": "1.3"}, {"n": "AtomicSky1", "q": ".7"}, {"n": "Birbito", "q": ""}, {"n": "Koalaaaaaaaaaaaa", "q": ""}, {"n": "ThePerfect being", "q": ""}, {"n": "YySleepy", "q": ""}, {"n": "deciduouskorai", "q": ""}, {"n": "des", "q": ""}, {"n": "riley", "q": ""}, {"n": "tay", "q": ""}],K='legionsDraftV2',LIM=120;
+const OW0=["ArcticJames","Alegged","Tepperz43","BadRexx","Jayow","Werewclf","hormigaMan9021","Bannab","TwisterOk","JfegTheFish"];
+let S=null;try{S=JSON.parse(localStorage.getItem(K))}catch(e){}
+S=S||{owners:OW0.map(o=>({o,t:''})),rounds:12,picks:[],lot:{},started:false,remaining:LIM,running:false,edits:{}};
+S.edits=S.edits||{};S.lot=S.lot||{};S.extra=S.extra||[];
+let P=BASE.concat(S.extra);
+let Q='',SORT='q',STREAM=false,SPIN=false;
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
+const G=i=>{const e=S.edits[i]||{};return {n:e.n||P[i].n,q:e.q!==undefined?e.q:P[i].q}};
+const num=x=>{const v=parseFloat(x);return isNaN(v)?-1:v};
+function el(t,c,x,f){const e=document.createElement(t);if(c)e.className=c;if(x!==undefined&&x!==null)e.textContent=x;if(f)e.onclick=f;return e}
+const N=()=>S.owners.length,tot=()=>S.rounds*N(),cur=()=>S.picks.length,rnd=()=>Math.floor(cur()/N());
+const drafted=()=>S.picks.filter(x=>x!==null).length;
+const done=()=>cur()>=tot()||drafted()>=P.length;
+const ro=r=>{const a=S.owners.map((_,i)=>i),l=S.lot[r];return l?l.concat(a.slice(2)):a};
+const needLot=()=>!done()&&cur()%N()===0&&!S.lot[rnd()];
+const onm=i=>S.owners[i].o||('Owner '+(i+1));
+const tn=i=>S.owners[i].t||onm(i);
+const taken=()=>new Set(S.picks.filter(x=>x!==null));
+const fmt=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+function modal(title,fields,onOk,msg,okText,xb){
+ const ov=el('div','ov'),bx=el('div','bx');bx.append(el('h3',0,title));if(msg)bx.append(el('p',0,msg));
+ const ins=fields.map(f=>{bx.append(el('label',0,f.l));const i=f.area?el('textarea'):el('input');if(f.area)i.rows=10;i.value=f.v||'';if(f.ro)i.readOnly=true;bx.append(i);return i});
+ const c=el('div','ctl'),close=()=>ov.remove();
+ (xb||[]).forEach(x=>c.append(el('button',0,x[0],()=>x[1](ins.map(i=>i.value)))));
+ c.append(el('button',0,onOk?'Cancel':'Close',close));
+ if(onOk)c.append(el('button','p',okText||'OK',()=>{close();onOk(ins.map(i=>i.value))}));
+ bx.append(c);ov.append(bx);document.body.append(ov);if(ins[0]){ins[0].focus();ins[0].select()}}
+function pick(i){if(done()||needLot())return;S.picks.push(i);S.remaining=LIM;save();render()}
+function lottery(){if(SPIN||!needLot())return;SPIN=true;render();const e=()=>document.getElementById('ls');
+ const iv=setInterval(()=>{const x=e();if(x)x.textContent=tn(Math.random()<.5?0:1)},90);
+ setTimeout(()=>{clearInterval(iv);S.lot[rnd()]=Math.random()<.5?[0,1]:[1,0];S.remaining=LIM;SPIN=false;save();render()},2400)}
+function render(){const a=document.getElementById('app');a.replaceChildren();document.body.className=STREAM?'stream':'';S.started?draft(a):setup(a)}
+function setup(a){
+ const w=el('div','setup');w.append(el('h1',0,'Draft Setup'),el('p','lbl','Draft order is the same each round, except picks 1 and 2 are decided by a lottery at the start of every round. Enter each team name and its owner, and move teams with the arrows. Team names show big, owner names show small.'));
+ S.owners.forEach((ow,i)=>{const r=el('div','srow');r.append(el('b',0,i+1));
+  const o=el('input');o.value=ow.o;o.placeholder='Owner name';o.oninput=()=>{ow.o=o.value;save()};
+  const t=el('input');t.value=ow.t;t.placeholder='Team name';t.oninput=()=>{ow.t=t.value;save()};
+  r.append(t,o,el('button',0,'\u2191',()=>{if(i){[S.owners[i-1],S.owners[i]]=[S.owners[i],S.owners[i-1]];save();render()}}),el('button',0,'\u2193',()=>{if(i<N()-1){[S.owners[i+1],S.owners[i]]=[S.owners[i],S.owners[i+1]];save();render()}}));
+  if(i<2)r.style.borderColor='var(--red)';w.append(r)});
+ const rr=el('div','srow');rr.append(el('span',0,'Rounds'));const inp=el('input');inp.type='number';inp.value=S.rounds;inp.style.cssText='width:80px;flex:none';inp.oninput=()=>{S.rounds=Math.max(1,Math.min(15,+inp.value||12));save()};rr.append(inp);w.append(rr);
+ const b=el('div','ctl');b.append(el('button','p','Start Draft',()=>{S.started=true;S.picks=[];S.lot={};S.remaining=LIM;S.running=false;save();render()}));w.append(b);a.append(w)}
+function draft(a){
+ const fin=done(),i=cur(),r=rnd(),nl=needLot();
+ const top=el('div','top'),l=el('div');
+ if(fin){l.append(el('div','lbl','DRAFT COMPLETE'),el('div','big team','Draft Complete'))}
+ else if(nl){l.append(el('div','lbl','ROUND '+(r+1)+' LOTTERY \u00b7 PICKS 1 & 2'));const ls=el('div','big team',SPIN?tn(0):tn(0)+' vs '+tn(1));ls.id='ls';l.append(ls);
+  const lb=el('button','p','Run lottery',lottery);lb.disabled=SPIN;lb.style.marginTop='8px';l.append(lb)}
+ else{const o=ro(r)[i%N()];l.append(el('div','lbl','ON THE CLOCK \u00b7 ROUND '+(r+1)+' \u00b7 PICK '+(i+1)),el('div','big team',tn(o)));
+  if(S.owners[o].t)l.append(el('div','lbl','Owner: '+onm(o)));
+  const p=i%N(),nx=p+1<N()?tn(ro(r)[p+1]):(r+1<S.rounds?'Round '+(r+2)+' lottery':null);if(nx)l.append(el('div','lbl','Up next: '+nx))}
+ top.append(l);const tm=el('div','big timer');tm.id='tm';top.append(tm);a.append(top);
+ const c=el('div','ctl');
+ c.append(el('button','p',S.running?'Pause timer':'Start timer',()=>{S.running=!S.running;save();render()}),
+  el('button',0,'Reset timer',()=>{S.remaining=LIM;save();render()}),
+  el('button',0,'Skip pick',()=>pick(null)));
+ if(S.lot[r]&&i%N()===0&&!fin)c.append(el('button',0,'Swap picks 1 & 2',()=>{S.lot[r]=[S.lot[r][1],S.lot[r][0]];save();render()}));
+ c.append(el('button',0,'Undo last pick',()=>{if(S.picks.length){S.picks.pop();S.remaining=LIM;save();render()}}),
+  el('button',0,'Stream view',()=>{STREAM=true;render()}),
+  el('button',0,'Copy results',copy),el('button',0,'Export players',exportPlayers),el('button',0,'Backup / Restore',backup),
+  el('button',0,'Reset draft',()=>modal('Reset the entire draft?',[],()=>{S.started=false;S.picks=[];S.lot={};S.running=false;S.remaining=LIM;save();render()},'This clears all picks and lottery results. Your edits to player Quips are kept.','Reset')));
+ a.append(c);
+ const m=el('div','main'),bw=el('div','bw'),bd=el('div','board');
+ bd.append(el('div'));S.owners.forEach((ow,k)=>{const h=el('div','hd',tn(k));if(ow.t)h.append(el('small',0,onm(k)));bd.append(h)});
+ for(let rr=0;rr<S.rounds;rr++){bd.append(el('div','rn big',rr+1));const order=ro(rr);
+  for(let k=0;k<N();k++){const n=rr*N()+order.indexOf(k),v=S.picks[n],ce=el('div','cell');
+   if(n<cur()){ce.classList.add('f');if(v===null)ce.append(el('small',0,'SKIPPED'));else{ce.append(el('span',0,G(v).n));if(G(v).q)ce.append(el('small',0,'Quips '+G(v).q))}}
+   else if(n>=P.length)ce.append(el('small',0,'No player left'));
+   else{ce.append(el('small',0,(!S.lot[rr]&&k<2)?'Lottery':'#'+(n+1)));if(n===i&&!nl&&!fin)ce.classList.add('c')}
+   bd.append(ce)}}
+ bw.append(bd);m.append(bw);
+ const pl=el('div','pool'),bar=el('div','bar'),s=el('input');s.placeholder='Search players';s.value=Q;s.oninput=()=>{Q=s.value;pool(fin||nl)};
+ bar.append(s,el('button',0,SORT==='q'?'Quips':'A-Z',()=>{SORT=SORT==='q'?'n':'q';render()}),el('button','p','+ Player',addPlayer));
+ const cnt=el('div','lbl');cnt.id='cnt';const lst=el('div');lst.id='pl';pl.append(bar,cnt,lst);m.append(pl);a.append(m);
+ if(STREAM){const x=el('button',0,'Exit stream view',()=>{STREAM=false;render()});x.style.cssText='position:fixed;top:8px;right:8px;opacity:.25';a.append(x)}
+ pool(fin||nl);tick()}
+function pool(block){
+ const L=document.getElementById('pl');if(!L)return;L.replaceChildren();const tk=taken(),q=Q.toLowerCase();
+ const arr=P.map((p,i)=>i).filter(i=>!tk.has(i)&&(!q||G(i).n.toLowerCase().includes(q)));
+ arr.sort((a,b)=>SORT==='q'?(num(G(b).q)-num(G(a).q))||G(a).n.localeCompare(G(b).n):G(a).n.toLowerCase().localeCompare(G(b).n.toLowerCase()));
+ document.getElementById('cnt').textContent=arr.length+' available';
+ arr.forEach(i=>{const g=G(i),r=el('div','pr'),tp=el('div','prt'),n=el('div');n.append(g.n,el('span','pq',num(g.q)<0?'?':g.q));
+  const bs=el('div');bs.style.cssText='display:flex;gap:6px';
+  const ed=el('button',0,'Edit',()=>modal('Edit '+g.n,[{l:'Quips (blank = unknown)',v:g.q},{l:'Name',v:g.n}],v=>{S.edits[i]={q:v[0].trim(),n:v[1].trim()||P[i].n};save();render()},null,'Save'));
+  const b=el('button','p','Draft',()=>pick(i));b.disabled=block;bs.append(ed,b);tp.append(n,bs);r.append(tp);L.append(r)})}
+function addPlayer(){modal('Add a player',[{l:'Minecraft name',v:''},{l:'Quips (blank = unknown)',v:''}],v=>{const n=v[0].trim();if(!n)return;
+ if(P.some((p,i)=>G(i).n.toLowerCase()===n.toLowerCase())){modal('Already in the pool',[],null,n+' is already on the list.');return}
+ const o={n,q:v[1].trim()};S.extra.push(o);P.push(o);save();render()},null,'Add')}
+function exportPlayers(){const q=x=>'"'+String(x).replace(/"/g,'""')+'"';
+ const txt='Minecraft IGN,Quips,Drafted By\n'+P.map((p,i)=>{const k=S.picks.indexOf(i),by=k<0?'':tn(ro(Math.floor(k/N()))[k%N()]);return q(G(i).n)+','+q(G(i).q)+','+q(by)}).join('\n');
+ modal('Updated player list (CSV)',[{l:'Select all and copy. Includes your added players, edited Quips, and who drafted each player.',v:txt,area:true,ro:true}],null)}
+function backup(){const txt=JSON.stringify(S);
+ modal('Backup / Restore',[{l:'Backup: copy or download this text and keep it safe. To restore, paste a saved backup here and click Restore.',v:txt,area:true}],v=>{
+  try{const o=JSON.parse(v[0]);if(!Array.isArray(o.owners)||!Array.isArray(o.picks))throw 0;o.edits=o.edits||{};o.lot=o.lot||{};o.extra=o.extra||[];S=o;P=BASE.concat(S.extra);save();render()}catch(e){modal('Could not restore',[],null,'That text is not a valid backup.')}},null,'Restore',
+  [['Download file',v=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([v[0]],{type:'application/json'}));a.download='legions-draft-backup.json';a.click()}]])}
+function copy(){const o=S.owners.map(()=>[]);S.picks.forEach((v,k)=>{if(v!==null){const ow=ro(Math.floor(k/N()))[k%N()];o[ow].push(G(v).n+(G(v).q?' ('+G(v).q+')':''))}});
+ const txt=S.owners.map((ow,k)=>tn(k)+(ow.t?' ('+onm(k)+')':'')+': '+o[k].join(', ')).join('\n');
+ modal('Draft results',[{l:'Select all and copy',v:txt,area:true,ro:true}],null)}
+let last=Date.now();
+function tick(){const e=document.getElementById('tm');if(!e)return;e.textContent=S.remaining<=0?'TIME!':fmt(S.remaining);e.classList.toggle('low',S.remaining<=15)}
+setInterval(()=>{const n=Date.now(),d=Math.floor((n-last)/1000);
+ if(S.running&&S.started&&!done()&&S.remaining>0){if(d>=1){S.remaining=Math.max(0,S.remaining-d);last=n;save()}}else last=n;tick()},250);
+document.addEventListener('keydown',e=>{if(['INPUT','TEXTAREA'].includes(e.target.tagName))return;
+ if(e.code==='Space'&&S.started){e.preventDefault();if(needLot())lottery();else{S.running=!S.running;save();render()}}
+ if(e.key==='Escape'&&STREAM){STREAM=false;render()}});
+render();
+</script></body></html>
